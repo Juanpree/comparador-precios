@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const zonaPegado = document.querySelector("#zonaPegado");
     const previewContainer = document.querySelector("#previewContainer");
     const previewImagen = document.querySelector("#previewImagen");
+    const inputConsulta = document.querySelector("#consulta");
 
     function mostrarPreview(archivo) {
         const lector = new FileReader();
@@ -61,13 +62,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     formulario.addEventListener("submit", function (event) {
-        if (inputImagen.files.length === 0) {
+        const hayImagen = inputImagen.files.length > 0;
+        const hayTexto = inputConsulta.value.trim() !== "";
+
+        if (!hayImagen && !hayTexto) {
             event.preventDefault();
-            alert("Tenés que subir o pegar una imagen.");
+            alert("Tenés que subir una imagen, pegar una imagen o escribir una búsqueda.");
         }
     });
 
-    // Tabs de resultados: Mercado Libre / Todo el menú
     const botonesTabs = document.querySelectorAll(".tab-btn");
     const contenidosTabs = document.querySelectorAll(".tab-contenido");
 
@@ -92,4 +95,121 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+    // Filtros dinámicos sin volver a consultar la API
+    const panelFiltros = document.querySelector(".filtros-dinamicos");
+    const inputNuevoFiltro = document.querySelector("#nuevoFiltro");
+    const btnAgregarFiltro = document.querySelector("#btnAgregarFiltro");
+    const chipsFiltros = document.querySelector("#chipsFiltros");
+    const contadorFiltros = document.querySelector("#contadorFiltros");
+    const tarjetasProductos = document.querySelectorAll(".producto-card");
+
+    let filtrosActivos = [];
+
+    function normalizarTexto(texto) {
+        return texto
+            .toString()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(",", ".")
+            .trim();
+    }
+
+    function renderizarFiltros() {
+        if (!chipsFiltros) return;
+
+        chipsFiltros.innerHTML = "";
+
+        filtrosActivos.forEach(function (filtro, index) {
+            const chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "chip-filtro";
+            chip.innerHTML = `${filtro} <span>×</span>`;
+
+            chip.addEventListener("click", function () {
+                filtrosActivos.splice(index, 1);
+                aplicarFiltros();
+            });
+
+            chipsFiltros.appendChild(chip);
+        });
+    }
+
+    function aplicarFiltros() {
+        let visibles = 0;
+
+        tarjetasProductos.forEach(function (tarjeta) {
+            const textoTarjeta = normalizarTexto(tarjeta.dataset.search || "");
+
+            const coincide = filtrosActivos.every(function (filtro) {
+                return textoTarjeta.includes(normalizarTexto(filtro));
+            });
+
+            if (coincide) {
+                tarjeta.style.display = "";
+                visibles++;
+            } else {
+                tarjeta.style.display = "none";
+            }
+        });
+
+        renderizarFiltros();
+
+        if (contadorFiltros) {
+            if (filtrosActivos.length === 0) {
+                contadorFiltros.textContent = "Sin filtros activos.";
+            } else {
+                contadorFiltros.textContent = `Mostrando ${visibles} resultado(s) con los filtros aplicados.`;
+            }
+        }
+    }
+
+    function agregarFiltroDesdeInput() {
+        if (!inputNuevoFiltro) return;
+
+        const texto = inputNuevoFiltro.value.trim();
+
+        if (texto === "") return;
+
+        const palabras = texto.split(/\s+/);
+
+        palabras.forEach(function (palabra) {
+            const filtroNormalizado = normalizarTexto(palabra);
+
+            const yaExiste = filtrosActivos.some(function (filtro) {
+                return normalizarTexto(filtro) === filtroNormalizado;
+            });
+
+            if (!yaExiste) {
+                filtrosActivos.push(palabra);
+            }
+        });
+
+        inputNuevoFiltro.value = "";
+        aplicarFiltros();
+    }
+
+    if (btnAgregarFiltro) {
+        btnAgregarFiltro.addEventListener("click", agregarFiltroDesdeInput);
+    }
+
+    if (inputNuevoFiltro) {
+        inputNuevoFiltro.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                agregarFiltroDesdeInput();
+            }
+        });
+    }
+
+    if (panelFiltros) {
+        const consultaInicial = panelFiltros.dataset.consultaInicial || "";
+
+        if (consultaInicial.trim() !== "") {
+            filtrosActivos = consultaInicial.trim().split(/\s+/);
+        }
+
+        aplicarFiltros();
+    }
 });

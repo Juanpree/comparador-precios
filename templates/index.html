@@ -24,14 +24,25 @@
                 <p>También podés seleccionar un archivo manualmente.</p>
             </div>
 
-            <input type="file" id="imagen" name="imagen" accept="image/*" required>
+            <input type="file" id="imagen" name="imagen" accept="image/*">
+
+            <label id="filtro" for="consulta">Buscar por palabra o agregar filtro:</label>
+            <input 
+                type="text" 
+                id="consulta" 
+                name="consulta" 
+                placeholder="Agregar un filtro"
+                value="{{ consulta }}"
+            >
+
+            <hr class="linea-formulario">
 
             <div id="previewContainer" class="preview-container" style="display: none;">
                 <h3>Imagen seleccionada</h3>
                 <img id="previewImagen" class="preview" alt="Vista previa de imagen pegada">
             </div>
 
-            <button type="submit">Buscar precios por imagen</button>
+            <button id="buscar" type="submit">Buscar precios</button>
         </form>
 
         {% if mensaje %}
@@ -45,7 +56,33 @@
             </div>
         {% endif %}
 
+        {% if consulta %}
+            <div class="filtros-usados">
+                <h2>Filtros usados</h2>
+                <p>{{ consulta }}</p>
+            </div>
+        {% endif %}
+
         {% if resultados_mercadolibre or resultados_otros %}
+            <div class="filtros-dinamicos" data-consulta-inicial="{{ consulta }}">
+                <h2>Filtros dinámicos</h2>
+
+                <div class="fila-filtro">
+                    <input 
+                        type="text" 
+                        id="nuevoFiltro" 
+                        placeholder="Agregar filtro: rosa, 1.2L, acero, negro"
+                    >
+
+                    <button type="button" id="btnAgregarFiltro">
+                        Agregar filtro
+                    </button>
+                </div>
+
+                <div id="chipsFiltros" class="chips-filtros"></div>
+
+                <p id="contadorFiltros" class="contador-filtros"></p>
+            </div>
 
             <div class="tabs">
                 <button class="tab-btn activo" data-tab="mercadolibre">
@@ -63,12 +100,19 @@
                 {% if resultados_mercadolibre %}
                     <div class="grid-resultados">
                         {% for item in resultados_mercadolibre %}
-                            <div class="card">
+                            <div 
+                                class="card producto-card {% if item.oferta %}card-oferta{% endif %}"
+                                data-search="{{ item.titulo }} {{ item.fuente }} {{ item.precio }}"
+                            >
                                 {% if item.imagen %}
                                     <img src="{{ item.imagen }}" alt="{{ item.titulo }}">
                                 {% endif %}
 
                                 <h3>{{ item.titulo }}</h3>
+
+                                {% if item.oferta %}
+                                    <p class="badge-oferta">Oferta detectada</p>
+                                {% endif %}
 
                                 <p><strong>Tienda/Fuente:</strong> {{ item.fuente }}</p>
 
@@ -105,12 +149,19 @@
                 {% if resultados_otros %}
                     <div class="grid-resultados">
                         {% for item in resultados_otros %}
-                            <div class="card {% if item.fuente and 'carol argentina oficial' in item.fuente|lower %}card-destacada{% endif %}">
+                            <div 
+                                class="card producto-card {% if item.fuente and 'carol argentina oficial' in item.fuente|lower %}card-destacada{% endif %} {% if item.oferta %}card-oferta{% endif %}"
+                                data-search="{{ item.titulo }} {{ item.fuente }} {{ item.precio }}"
+                            >
                                 {% if item.imagen %}
                                     <img src="{{ item.imagen }}" alt="{{ item.titulo }}">
                                 {% endif %}
 
                                 <h3>{{ item.titulo }}</h3>
+
+                                {% if item.oferta %}
+                                    <p class="badge-oferta">Oferta detectada</p>
+                                {% endif %}
 
                                 <p><strong>Tienda/Fuente:</strong> {{ item.fuente }}</p>
 

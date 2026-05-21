@@ -5,7 +5,7 @@
 body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
-    background-color: #f4f6f8;
+    background-color: #f9fafb;
     color: #222;
 }
 
@@ -59,6 +59,8 @@ button,
     text-decoration: none;
     text-align: center;
     display: inline-block;
+    margin-top: auto;
+    align-self: left;
 }
 
 button:hover,
@@ -101,6 +103,8 @@ button:hover,
     padding: 15px;
     background-color: #ffffff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
 }
 
 .card img {
@@ -155,6 +159,14 @@ button:hover,
 .imagen-cargada {
     border-color: #15803d;
     background-color: #ecfdf5;
+}
+
+#consulta {
+    padding: 4px;
+}
+
+#buscar {
+    margin-top: 24px;
 }
 
 .preview-container {
@@ -227,6 +239,105 @@ h2 {
     padding: 6px 10px;
     background-color: #fef3c7;
     color: #92400e;
+    border-radius: 999px;
+    font-weight: bold;
+    font-size: 13px;
+    margin: 6px 0;
+}
+
+.filtros-usados {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+}
+
+.filtros-usados h2 {
+    margin-top: 0;
+}
+
+.filtros-usados p {
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: white;
+    border-radius: 999px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+.linea-formulario {
+    width: 100%;
+    border: none;
+    border-top: 1px solid #d1d5db;
+    margin: 25px 0 10px 0;
+}
+
+.filtros-dinamicos {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f8fafc;
+    border: 1px solid #dbeafe;
+    border-radius: 12px;
+}
+
+.filtros-dinamicos h2 {
+    margin-top: 0;
+}
+
+.fila-filtro {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.fila-filtro input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+}
+
+.fila-filtro button {
+    width: auto;
+    margin-top: 0;
+    padding: 10px 14px;
+}
+
+.chips-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chip-filtro {
+    width: auto;
+    margin-top: 0;
+    padding: 7px 10px;
+    background-color: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.chip-filtro span {
+    margin-left: 6px;
+    color: #dc2626;
+}
+
+.contador-filtros {
+    color: #475569;
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.badge-oferta {
+    display: inline-block;
+    padding: 6px 10px;
+    background-color: #dcfce7;
+    color: #166534;
     border-radius: 999px;
     font-weight: bold;
     font-size: 13px;
