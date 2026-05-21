@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Comparador de Precios por Imagen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="contenedor">
+        <h1>Comparador de Precios por Imagen</h1>
+
+        <p class="subtitulo">
+            Subí, arrastrá o pegá una foto del producto para buscar coincidencias visuales con precios y links.
+        </p>
+
+        <form method="POST" enctype="multipart/form-data" class="formulario">
+            
+            <label for="imagen">Foto del producto:</label>
+
+            <div id="zonaPegado" class="zona-pegado">
+                <p><strong>Pegá una imagen acá</strong></p>
+                <p>Usá <strong>Cmd + V</strong> en Mac o <strong>Ctrl + V</strong> en Windows</p>
+                <p>También podés seleccionar un archivo manualmente.</p>
+            </div>
+
+            <input type="file" id="imagen" name="imagen" accept="image/*" required>
+
+            <div id="previewContainer" class="preview-container" style="display: none;">
+                <h3>Imagen seleccionada</h3>
+                <img id="previewImagen" class="preview" alt="Vista previa de imagen pegada">
+            </div>
+
+            <button type="submit">Buscar precios por imagen</button>
+        </form>
+
+        {% if mensaje %}
+            <p class="mensaje">{{ mensaje }}</p>
+        {% endif %}
+
+        {% if imagen_url %}
+            <div class="imagen-subida">
+                <h2>Imagen consultada</h2>
+                <img src="{{ imagen_url }}" alt="Imagen subida" class="preview">
+            </div>
+        {% endif %}
+
+        {% if resultados_mercadolibre or resultados_otros %}
+
+            <div class="tabs">
+                <button class="tab-btn activo" data-tab="mercadolibre">
+                    Mercado Libre
+                </button>
+
+                <button class="tab-btn" data-tab="otros">
+                    Otras páginas (en pesos solamente)
+                </button>
+            </div>
+
+            <section id="tab-mercadolibre" class="tab-contenido activo">
+                <h2>Productos de Mercado Libre</h2>
+
+                {% if resultados_mercadolibre %}
+                    <div class="grid-resultados">
+                        {% for item in resultados_mercadolibre %}
+                            <div class="card">
+                                {% if item.imagen %}
+                                    <img src="{{ item.imagen }}" alt="{{ item.titulo }}">
+                                {% endif %}
+
+                                <h3>{{ item.titulo }}</h3>
+
+                                <p><strong>Tienda/Fuente:</strong> {{ item.fuente }}</p>
+
+                                {% if item.precio %}
+                                    <p class="precio">{{ item.precio }}</p>
+                                {% else %}
+                                    <p class="sin-precio">Precio no encontrado</p>
+                                {% endif %}
+
+                                {% if item.stock is not none %}
+                                    {% if item.stock %}
+                                        <p class="stock">En stock</p>
+                                    {% else %}
+                                        <p class="sin-stock">Sin stock informado</p>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if item.link %}
+                                    <a href="{{ item.link }}" target="_blank" class="boton-link">
+                                        Ver producto
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="mensaje">No se encontraron productos de Mercado Libre.</p>
+                {% endif %}
+            </section>
+
+            <section id="tab-otros" class="tab-contenido">
+                <h2>Otras páginas</h2>
+
+                {% if resultados_otros %}
+                    <div class="grid-resultados">
+                        {% for item in resultados_otros %}
+                            <div class="card {% if item.fuente and 'carol argentina oficial' in item.fuente|lower %}card-destacada{% endif %}">
+                                {% if item.imagen %}
+                                    <img src="{{ item.imagen }}" alt="{{ item.titulo }}">
+                                {% endif %}
+
+                                <h3>{{ item.titulo }}</h3>
+
+                                <p><strong>Tienda/Fuente:</strong> {{ item.fuente }}</p>
+
+                                {% if item.fuente and "carol argentina oficial" in item.fuente|lower %}
+                                    <p class="destacado-fuente">Tienda destacada</p>
+                                {% endif %}
+
+                                {% if item.precio %}
+                                    <p class="precio">{{ item.precio }}</p>
+                                {% else %}
+                                    <p class="sin-precio">Precio no encontrado</p>
+                                {% endif %}
+
+                                {% if item.stock is not none %}
+                                    {% if item.stock %}
+                                        <p class="stock">En stock</p>
+                                    {% else %}
+                                        <p class="sin-stock">Sin stock informado</p>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if item.link %}
+                                    <a href="{{ item.link }}" target="_blank" class="boton-link">
+                                        Ver producto
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="mensaje">No se encontraron productos en otras páginas.</p>
+                {% endif %}
+            </section>
+
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

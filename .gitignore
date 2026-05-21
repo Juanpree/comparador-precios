@@ -1,0 +1,37 @@
+# Entorno virtual
+.venv/
+venv/
+env/
+
+# Variables de entorno / claves privadas
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Flask
+instance/
+.webassets-cache
+
+# Base de datos local
+productos.db
+*.sqlite
+*.sqlite3
+*.db
+
+# Imágenes subidas por usuarios
+uploads/*
+!uploads/.gitkeep
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
